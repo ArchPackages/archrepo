@@ -51,6 +51,9 @@ jobs:
           ref: master
           path: src/brother
 
+      - name: Fetch libsearpc from AUR
+        run: git clone --depth 1 https://aur.archlinux.org/libsearpc.git src/libsearpc
+
       - name: Build in Arch Linux container
         run: |
           docker run --rm \

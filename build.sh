@@ -41,7 +41,7 @@ install_built() {
   local files=()
   while IFS= read -r f; do
     files+=("$f")
-  done < <(find "$OUT" -maxdepth 1 -type f -name "$pattern")
+  done < <(find "$OUT" -maxdepth 1 -type f -name "$pattern" ! -name '*-debug-*')
   if ((${#files[@]} == 0)); then
     echo "error: no built package matched $pattern" >&2
     exit 1
@@ -49,10 +49,14 @@ install_built() {
   pacman -U --noconfirm "${files[@]}"
 }
 
-# Dependency order matters: seafile needs local libwebsockets 5.0.0,
-# seafile-client needs local seafile, and brscan-skey needs local brscan5.
+# Dependency order matters: libsearpc and libwebsockets must be installed
+# before seafile, seafile-client needs local seafile, and brscan-skey needs
+# local brscan5.
 build_pkg src/libwebsockets
 install_built 'libwebsockets-*.pkg.tar.zst'
+
+build_pkg src/libsearpc
+install_built 'libsearpc-*.pkg.tar.zst'
 
 build_pkg src/seafile
 install_built 'seafile-9*.pkg.tar.zst'
@@ -64,7 +68,8 @@ install_built 'brscan5-*.pkg.tar.zst'
 build_pkg src/brother/scanner/brscan-skey
 
 echo '==> Collecting packages'
-cp -f "$OUT"/*.pkg.tar.zst "$REPO/x86_64/"
+find "$OUT" -maxdepth 1 -type f -name '*.pkg.tar.zst' \
+  ! -name '*-debug-*' -exec cp -f {} "$REPO/x86_64/" \;
 
 echo '==> Generating pacman database'
 cd "$REPO/x86_64"
@@ -89,7 +94,7 @@ cat > "$REPO/index.html" <<'HTML'
 Server = https://archpackages.github.io/archrepo/$arch
 SigLevel = Optional TrustAll</pre>
 <p>Then run <code>sudo pacman -Syu</code>.</p>
-<p>Packages: libwebsockets 5.0.0, seafile, seafile-client,
+<p>Packages: libwebsockets 5.0.0, libsearpc, seafile, seafile-client,
 brother-mfc-l3760cdw, brscan5, brscan-skey.</p>
 <p>Built from source by GitHub Actions from the
 <a href="https://github.com/ArchPackages">ArchPackages</a> repos.</p>

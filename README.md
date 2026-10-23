@@ -6,6 +6,7 @@ and published to GitHub Pages.
 ## Packages
 
 - `libwebsockets` 5.0.0 — required by Seafile
+- `libsearpc` 3.3.0 — Seafile RPC dependency, built from AUR
 - `seafile` 9.0.22
 - `seafile-client` 9.0.22
 - `brother-mfc-l3760cdw` 3.5.1
@@ -43,6 +44,9 @@ not signed.
   `repo-add`, and deploys `repo/` through GitHub Pages.
 - `build.sh` contains the container-side build: dependency-ordered builds,
   local package installation, and repository generation.
+- `libsearpc` is fetched from the AUR repository because Seafile depends on it
+  and it is not in the Arch repos. Thanks to its AUR maintainer and
+  contributors.
 - Unsigned packages are acceptable for a personal repository; add GPG signing
   later if the repository is shared more widely.
 
