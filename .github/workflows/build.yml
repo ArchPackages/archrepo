@@ -51,8 +51,12 @@ jobs:
           ref: master
           path: src/brother
 
-      - name: Fetch libsearpc from AUR
-        run: git clone --depth 1 https://aur.archlinux.org/libsearpc.git src/libsearpc
+      - name: Checkout libsearpc
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/libsearpc
+          ref: master
+          path: src/libsearpc
 
       - name: Build in Arch Linux container
         run: |

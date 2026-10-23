@@ -97,7 +97,7 @@ Restart the Seafile applet after installing or upgrading it.
 | Package | Version | Notes |
 |---|---|---|
 | `libwebsockets` | 5.0.0-1 | Required by Seafile; shadows Arch's 4.5.8 |
-| `libsearpc` | 2:3.3.0-5 | Seafile RPC dependency, built from AUR |
+| `libsearpc` | 2:3.3.0-5 | Seafile RPC dependency; ArchPackages fork |
 | `seafile` | 9.0.22-2 | Sync daemon |
 | `seafile-client` | 9.0.22-1 | Qt 6 desktop applet |
 | `brother-mfc-l3760cdw` | 3.5.1-4 | LPR/CUPS printer drivers |
@@ -152,4 +152,5 @@ Package sources:
 - <https://github.com/ArchPackages/seafile>
 - <https://github.com/ArchPackages/seafile-client>
 - <https://github.com/ArchPackages/brother>
-- `libsearpc` is built from the AUR: <https://aur.archlinux.org/packages/libsearpc>
+- <https://github.com/ArchPackages/libsearpc>
+  (forked from <https://aur.archlinux.org/packages/libsearpc>)
