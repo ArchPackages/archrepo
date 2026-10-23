@@ -154,3 +154,28 @@ Package sources:
 - <https://github.com/ArchPackages/brother>
 - <https://github.com/ArchPackages/libsearpc>
   (forked from <https://aur.archlinux.org/packages/libsearpc>)
+
+## Troubleshooting
+
+### `Maximum file size exceeded`
+
+Pacman limits a download to the package size recorded in the synced database.
+Immediately after a repository rebuild, GitHub Pages can briefly serve a cached
+database and a package file from different builds. If the package file is
+larger than the size in the database, libcurl stops with:
+
+```
+Maximum file size exceeded
+```
+
+Refresh the sync database and retry:
+
+```bash
+sudo rm -f /var/lib/pacman/sync/archpackages.db*
+sudo pacman -Syy
+sudo pacman -Syu
+```
+
+If it persists, wait a few minutes for the Pages CDN cache to expire and repeat.
+Removing the sync database is safe; installed packages and the trusted key are
+unaffected.
