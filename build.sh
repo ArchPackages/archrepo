@@ -71,6 +71,19 @@ echo '==> Collecting packages'
 find "$OUT" -maxdepth 1 -type f -name '*.pkg.tar.zst' \
   ! -name '*-debug-*' -exec cp -f {} "$REPO/x86_64/" \;
 
+echo '==> Normalising package filenames'
+# makepkg includes the epoch in the filename; Arch package filenames and
+# GitHub artifacts do not allow the ':' character. The epoch remains in the
+# package metadata, only the filename loses it.
+shopt -s nullglob
+for pkg in "$REPO"/x86_64/*.pkg.tar.zst; do
+  name="$(basename "$pkg")"
+  clean="$(printf '%s' "$name" | sed -E 's/-[0-9]+:/-/')"
+  if [[ "$name" != "$clean" ]]; then
+    mv -f "$pkg" "$REPO/x86_64/$clean"
+  fi
+done
+
 echo '==> Staging packages'
 touch "$REPO/.nojekyll"
 chmod -R a+rX "$REPO"
