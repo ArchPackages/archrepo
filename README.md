@@ -11,7 +11,9 @@ ArchPackages package forks by GitHub Actions and published on GitHub Pages.
 
 ### 1. Add the repository
 
-Edit `/etc/pacman.conf` and add this section **above `[extra]`**:
+Pacman does not auto-load files from `/etc/pacman.d`, so it needs one `Include`
+line in `/etc/pacman.conf`. Keep the repository definition itself in
+`/etc/pacman.d/archpackages.conf`:
 
 ```ini
 [archpackages]
@@ -19,8 +21,20 @@ Server = https://archpackages.github.io/archrepo/$arch
 SigLevel = Optional TrustAll
 ```
 
+Then add this line to `/etc/pacman.conf`, **above `[extra]`**:
+
+```ini
+Include = /etc/pacman.d/archpackages.conf
+```
+
 The order matters: this repository provides `libwebsockets` 5.0.0, which must
 take precedence over the 4.5.8 package in Arch's `[extra]`.
+
+`/etc/pacman.conf` is owned by the `pacman` package and may be replaced or
+produce a `.pacnew` on updates. Keeping the repository in
+`/etc/pacman.d/archpackages.conf` means only the one-line `Include` ever needs
+merging; the `[omarchy]`, `[core]`, `[extra]` and `[multilib]` sections remain
+untouched.
 
 ### 2. Update and install
 
