@@ -62,6 +62,42 @@ jobs:
             archlinux:base-devel \
             bash build.sh
 
+      - name: Upload unsigned packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-unsigned
+          path: repo
+          retention-days: 1
+
+  sign:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: signing
+    steps:
+      - name: Checkout repository builder
+        uses: actions/checkout@v4
+
+      - name: Download unsigned packages
+        uses: actions/download-artifact@v4
+        with:
+          name: repo-unsigned
+          path: repo
+
+      - name: Sign packages and database
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          docker run --rm \
+            --env GPG_PRIVATE_KEY \
+            --env GPG_PASSPHRASE \
+            --env GPG_KEY_ID \
+            --volume "$GITHUB_WORKSPACE:/work" \
+            --workdir /work \
+            archlinux:base-devel \
+            bash sign.sh
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
@@ -71,7 +107,7 @@ jobs:
           path: repo
 
   deploy:
-    needs: build
+    needs: sign
     runs-on: ubuntu-latest
     environment:
       name: github-pages

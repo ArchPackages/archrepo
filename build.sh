@@ -71,38 +71,8 @@ echo '==> Collecting packages'
 find "$OUT" -maxdepth 1 -type f -name '*.pkg.tar.zst' \
   ! -name '*-debug-*' -exec cp -f {} "$REPO/x86_64/" \;
 
-echo '==> Generating pacman database'
-cd "$REPO/x86_64"
-rm -f archpackages.db archpackages.db.tar.gz \
-      archpackages.files archpackages.files.tar.gz
-repo-add archpackages.db.tar.gz ./*.pkg.tar.zst
-
-# GitHub Pages does not reliably serve symlinks, so publish real copies.
-rm -f archpackages.db archpackages.files
-cp -f archpackages.db.tar.gz archpackages.db
-cp -f archpackages.files.tar.gz archpackages.files
-
-echo '==> Writing index page'
-cat > "$REPO/index.html" <<'HTML'
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>ArchPackages repository</title></head>
-<body>
-<h1>ArchPackages pacman repository</h1>
-<p>Add this to <code>/etc/pacman.conf</code>, before <code>[extra]</code>:</p>
-<pre>[archpackages]
-Server = https://archpackages.github.io/archrepo/$arch
-SigLevel = Optional TrustAll</pre>
-<p>Then run <code>sudo pacman -Syu</code>.</p>
-<p>Packages: libwebsockets 5.0.0, libsearpc, seafile, seafile-client,
-brother-mfc-l3760cdw, brscan5, brscan-skey.</p>
-<p>Built from source by GitHub Actions from the
-<a href="https://github.com/ArchPackages">ArchPackages</a> repos.</p>
-</body>
-</html>
-HTML
+echo '==> Staging packages'
 touch "$REPO/.nojekyll"
-
 chmod -R a+rX "$REPO"
 
 echo '==> Done'

@@ -1,6 +1,6 @@
 # ArchPackages pacman repository
 
-A small, unsigned pacman repository for Arch Linux (x86_64), built from the
+A small, signed pacman repository for Arch Linux (x86_64), built from the
 ArchPackages package forks by GitHub Actions and published on GitHub Pages.
 
 - **Repository URL:** `https://archpackages.github.io/archrepo/$arch`
@@ -18,7 +18,7 @@ line in `/etc/pacman.conf`. Keep the repository definition itself in
 ```ini
 [archpackages]
 Server = https://archpackages.github.io/archrepo/$arch
-SigLevel = Optional TrustAll
+SigLevel = Required DatabaseOptional
 ```
 
 Then add this line to `/etc/pacman.conf`, **above `[extra]`**:
@@ -36,7 +36,23 @@ produce a `.pacnew` on updates. Keeping the repository in
 merging; the `[omarchy]`, `[core]`, `[extra]` and `[multilib]` sections remain
 untouched.
 
-### 2. Update and install
+### 2. Import and trust the signing key
+
+```bash
+curl -O https://archpackages.github.io/archrepo/archpackages.asc
+
+sudo pacman-key --add archpackages.asc
+
+FPR=$(gpg --show-keys --with-colons archpackages.asc |
+      awk -F: '/^fpr:/ {print $10; exit}')
+sudo pacman-key --lsign-key "$FPR"
+```
+
+The fingerprint is also shown on
+<https://archpackages.github.io/archrepo/>. `gpg` is provided by the `gnupg`
+package, which is normally installed on Arch.
+
+### 3. Update and install
 
 ```bash
 sudo pacman -Syu
@@ -59,7 +75,7 @@ once:
 sudo pacman -Syy
 ```
 
-### 3. Verify
+### 4. Verify
 
 ```bash
 pacman -Q seafile seafile-client libwebsockets libsearpc
@@ -92,9 +108,18 @@ The repository is x86_64 only.
 
 ## Signing
 
-Packages are **unsigned**, hence `SigLevel = Optional TrustAll`. Only add this
-repository if you trust its GitHub Actions builds and the package sources
-listed below. GPG signing can be added later.
+Packages and the pacman database are signed by a dedicated Ed25519 repository
+key. The public key is published as
+<https://archpackages.github.io/archrepo/archpackages.asc>, and its fingerprint
+is shown on the repository index page.
+
+The repository snippet uses `SigLevel = Required DatabaseOptional`, so package
+signatures are required and the database signature is verified when present.
+Do not replace this with `Optional TrustAll`.
+
+The signing key is kept in the GitHub `signing` environment. If the key is ever
+compromised or rotated, the old key will be revoked and a new public key
+published.
 
 ## Updating the repository
 
@@ -109,9 +134,13 @@ or use **Actions → build-pacman-repo → Run workflow** on GitHub. Pushing to
 
 ## How it works
 
-- `.github/workflows/build.yml` checks out the package repos, runs
-  `build.sh` inside an `archlinux:base-devel` Docker container, generates the
-  pacman database with `repo-add`, and deploys `repo/` through GitHub Pages.
+- `.github/workflows/build.yml` has three stages:
+  - `build`: checks out the package repos and runs `build.sh` inside an
+    `archlinux:base-devel` Docker container, producing unsigned packages.
+  - `sign`: runs in the GitHub `signing` environment, imports the private key
+    in a throwaway container, signs every package and the pacman database,
+    exports the public key, and generates the index page.
+  - `deploy`: publishes `repo/` through GitHub Pages.
 - Build order is `libwebsockets` → `libsearpc` → `seafile` →
   `seafile-client` → Brother packages, installing local packages before their
   dependents.
