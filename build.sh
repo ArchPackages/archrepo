@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WORK=/work
+OUT="$WORK/out"
+REPO="$WORK/repo"
+
+if [[ ! -f /etc/arch-release ]]; then
+  echo "error: build.sh must run inside an Arch Linux container" >&2
+  exit 1
+fi
+
+echo '==> Updating Arch container'
+if ! pacman -Syu --noconfirm --needed; then
+  pacman-key --init
+  pacman-key --populate archlinux
+  pacman -Syu --noconfirm --needed
+fi
+pacman -S --noconfirm --needed base-devel git sudo
+
+if ! id builder >/dev/null 2>&1; then
+  useradd -m builder
+fi
+echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+chmod 440 /etc/sudoers.d/builder
+
+cd "$WORK"
+mkdir -p "$OUT" "$REPO/x86_64"
+chown -R builder:builder "$WORK"
+
+build_pkg() {
+  local dir="$1"
+  echo "==> Building $dir"
+  ( cd "$WORK/$dir" && \
+    sudo -u builder -H env PKGDEST="$OUT" \
+      makepkg -f -s --noconfirm --noprogressbar )
+}
+
+install_built() {
+  local pattern="$1"
+  local files=()
+  while IFS= read -r f; do
+    files+=("$f")
+  done < <(find "$OUT" -maxdepth 1 -type f -name "$pattern")
+  if ((${#files[@]} == 0)); then
+    echo "error: no built package matched $pattern" >&2
+    exit 1
+  fi
+  pacman -U --noconfirm "${files[@]}"
+}
+
+# Dependency order matters: seafile needs local libwebsockets 5.0.0,
+# seafile-client needs local seafile, and brscan-skey needs local brscan5.
+build_pkg src/libwebsockets
+install_built 'libwebsockets-*.pkg.tar.zst'
+
+build_pkg src/seafile
+install_built 'seafile-9*.pkg.tar.zst'
+
+build_pkg src/seafile-client
+build_pkg src/brother/printer
+build_pkg src/brother/scanner
+install_built 'brscan5-*.pkg.tar.zst'
+build_pkg src/brother/scanner/brscan-skey
+
+echo '==> Collecting packages'
+cp -f "$OUT"/*.pkg.tar.zst "$REPO/x86_64/"
+
+echo '==> Generating pacman database'
+cd "$REPO/x86_64"
+rm -f archpackages.db archpackages.db.tar.gz \
+      archpackages.files archpackages.files.tar.gz
+repo-add archpackages.db.tar.gz ./*.pkg.tar.zst
+
+# GitHub Pages does not reliably serve symlinks, so publish real copies.
+rm -f archpackages.db archpackages.files
+cp -f archpackages.db.tar.gz archpackages.db
+cp -f archpackages.files.tar.gz archpackages.files
+
+echo '==> Writing index page'
+cat > "$REPO/index.html" <<'HTML'
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>ArchPackages repository</title></head>
+<body>
+<h1>ArchPackages pacman repository</h1>
+<p>Add this to <code>/etc/pacman.conf</code>, before <code>[extra]</code>:</p>
+<pre>[archpackages]
+Server = https://archpackages.github.io/archrepo/$arch
+SigLevel = Optional TrustAll</pre>
+<p>Then run <code>sudo pacman -Syu</code>.</p>
+<p>Packages: libwebsockets 5.0.0, seafile, seafile-client,
+brother-mfc-l3760cdw, brscan5, brscan-skey.</p>
+<p>Built from source by GitHub Actions from the
+<a href="https://github.com/ArchPackages">ArchPackages</a> repos.</p>
+</body>
+</html>
+HTML
+touch "$REPO/.nojekyll"
+
+chmod -R a+rX "$REPO"
+
+echo '==> Done'
+find "$REPO" -maxdepth 2 -type f -printf '%P\n' | sort

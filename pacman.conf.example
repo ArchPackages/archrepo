@@ -1,0 +1,3 @@
+[archpackages]
+Server = https://archpackages.github.io/archrepo/$arch
+SigLevel = Optional TrustAll

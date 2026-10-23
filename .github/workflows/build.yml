@@ -1,0 +1,79 @@
+name: build-pacman-repo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"   # weekly, Monday 03:00 UTC
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository builder
+        uses: actions/checkout@v4
+
+      - name: Checkout libwebsockets
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/libwebsockets
+          ref: main
+          path: src/libwebsockets
+
+      - name: Checkout seafile
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/seafile
+          ref: miki
+          path: src/seafile
+
+      - name: Checkout seafile-client
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/seafile-client
+          ref: miki
+          path: src/seafile-client
+
+      - name: Checkout brother packages
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/brother
+          ref: master
+          path: src/brother
+
+      - name: Build in Arch Linux container
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/work" \
+            --workdir /work \
+            archlinux:base-devel \
+            bash build.sh
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: repo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
