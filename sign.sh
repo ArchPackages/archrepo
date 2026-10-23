@@ -83,6 +83,27 @@ sign_file archpackages.files.tar.gz
 echo '==> Publishing public key'
 gpg --armor --export "$FPR" > "$REPO/archpackages.asc"
 
+# Fail closed if the public export is not exactly a public key.
+if ! grep -q '^-----BEGIN PGP PUBLIC KEY BLOCK-----$' "$REPO/archpackages.asc" \
+   || grep -q 'PRIVATE KEY' "$REPO/archpackages.asc"; then
+  echo "error: refusing to publish a non-public key file" >&2
+  exit 1
+fi
+
+CHECKHOME="$(mktemp -d)"
+chmod 700 "$CHECKHOME"
+if ! gpg --homedir "$CHECKHOME" --batch --import "$REPO/archpackages.asc" >/dev/null 2>&1; then
+  echo "error: published public key could not be imported" >&2
+  rm -rf "$CHECKHOME"
+  exit 1
+fi
+if gpg --homedir "$CHECKHOME" --list-secret-keys --with-colons | grep -q '^sec:'; then
+  echo "error: published key file contains secret key material" >&2
+  rm -rf "$CHECKHOME"
+  exit 1
+fi
+rm -rf "$CHECKHOME"
+
 echo '==> Writing index page'
 cat > "$REPO/index.html" <<HTML
 <!doctype html>
