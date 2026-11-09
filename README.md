@@ -1,7 +1,8 @@
 # ArchPackages pacman repository
 
 A small, signed pacman repository for Arch Linux (x86_64), built from the
-ArchPackages package forks by GitHub Actions and published on GitHub Pages.
+ArchPackages package forks (Seafile, Brother and Mattermost Desktop) by GitHub
+Actions and published on GitHub Pages.
 
 - **Repository URL:** `https://archpackages.github.io/archrepo/$arch`
 - **Source:** <https://github.com/ArchPackages/archrepo>
@@ -68,6 +69,12 @@ For the Brother printer and scanner:
 sudo pacman -S brother-mfc-l3760cdw brscan5 brscan-skey
 ```
 
+For Mattermost Desktop:
+
+```bash
+sudo pacman -S mattermost-desktop
+```
+
 If pacman cannot find the `archpackages` database, refresh the sync databases
 once:
 
@@ -79,6 +86,7 @@ sudo pacman -Syy
 
 ```bash
 pacman -Q seafile seafile-client libwebsockets libsearpc
+pacman -Q mattermost-desktop
 ```
 
 Expected versions:
@@ -88,6 +96,7 @@ libwebsockets 5.0.0-1
 libsearpc 2:3.3.0-5
 seafile 9.0.22-2
 seafile-client 9.0.22-1
+mattermost-desktop 6.3.2-1
 ```
 
 Restart the Seafile applet after installing or upgrading it.
@@ -103,6 +112,7 @@ Restart the Seafile applet after installing or upgrading it.
 | `brother-mfc-l3760cdw` | 3.5.1-4 | LPR/CUPS printer drivers |
 | `brscan5` | 1.7.0_0-1 | SANE scanner driver |
 | `brscan-skey` | 0.3.5_0-1 | Scanner S-KEY tool |
+| `mattermost-desktop` | 6.3.2-1 | Mattermost Desktop client |
 
 The repository is x86_64 only.
 
@@ -142,8 +152,8 @@ or use **Actions → build-pacman-repo → Run workflow** on GitHub. Pushing to
     exports the public key, and generates the index page.
   - `deploy`: publishes `repo/` through GitHub Pages.
 - Build order is `libwebsockets` → `libsearpc` → `seafile` →
-  `seafile-client` → Brother packages, installing local packages before their
-  dependents.
+  `seafile-client` → Brother packages → `mattermost-desktop`, installing local
+  packages before their dependents.
 - Debug packages are excluded from the published repository.
 
 Package sources:
@@ -154,6 +164,8 @@ Package sources:
 - <https://github.com/ArchPackages/brother>
 - <https://github.com/ArchPackages/libsearpc>
   (forked from <https://aur.archlinux.org/packages/libsearpc>)
+- <https://github.com/ArchPackages/mattermost-desktop>
+  (forked from <https://archlinux.org/packages/extra/x86_64/mattermost-desktop/>)
 
 ## Troubleshooting
 

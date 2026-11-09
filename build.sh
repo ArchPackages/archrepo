@@ -67,6 +67,8 @@ build_pkg src/brother/scanner
 install_built 'brscan5-*.pkg.tar.zst'
 build_pkg src/brother/scanner/brscan-skey
 
+build_pkg src/mattermost-desktop
+
 echo '==> Collecting packages'
 find "$OUT" -maxdepth 1 -type f -name '*.pkg.tar.zst' \
   ! -name '*-debug-*' -exec cp -f {} "$REPO/x86_64/" \;

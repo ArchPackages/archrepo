@@ -58,6 +58,13 @@ jobs:
           ref: master
           path: src/libsearpc
 
+      - name: Checkout mattermost-desktop
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/mattermost-desktop
+          ref: main
+          path: src/mattermost-desktop
+
       - name: Build in Arch Linux container
         run: |
           docker run --rm \
