@@ -72,6 +72,13 @@ jobs:
           ref: main
           path: src/mattermost-desktop
 
+      - name: Checkout viber
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/viber
+          ref: master
+          path: src/viber
+
       - name: Build in Arch Linux container
         run: |
           docker run --rm \

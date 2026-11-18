@@ -1,8 +1,8 @@
 # ArchPackages pacman repository
 
 A small, signed pacman repository for Arch Linux (x86_64), built from the
-ArchPackages package forks (Seafile, Brother, Mattermost Desktop and the
-Electron 45 runtime) by GitHub Actions and published on GitHub Pages.
+ArchPackages package forks (Seafile, Brother, Mattermost Desktop, the Electron
+45 runtime and Viber) by GitHub Actions and published on GitHub Pages.
 
 - **Repository URL:** `https://archpackages.github.io/archrepo/$arch`
 - **Source:** <https://github.com/ArchPackages/archrepo>
@@ -79,6 +79,15 @@ Mattermost Desktop 6.4.0 uses Electron 45. Arch does not package `electron45`
 yet, so this repository provides the prebuilt `electron45-bin` runtime, which
 is installed automatically as `mattermost-desktop`'s dependency.
 
+For Viber:
+
+```bash
+sudo pacman -S viber
+```
+
+Viber is repackaged from the vendor's official Debian build. It is proprietary
+software; review Viber's terms before redistributing it.
+
 If pacman cannot find the `archpackages` database, refresh the sync databases
 once:
 
@@ -90,7 +99,7 @@ sudo pacman -Syy
 
 ```bash
 pacman -Q seafile seafile-client libwebsockets libsearpc
-pacman -Q mattermost-desktop electron45-bin
+pacman -Q mattermost-desktop electron45-bin viber
 ```
 
 Expected versions:
@@ -102,6 +111,7 @@ seafile 9.0.22-2
 seafile-client 9.0.22-1
 mattermost-desktop 6.4.0-2
 electron45-bin 45.3.4-1
+viber 29.4.0.7-1
 ```
 
 Restart the Seafile applet after installing or upgrading it.
@@ -119,6 +129,7 @@ Restart the Seafile applet after installing or upgrading it.
 | `brscan-skey` | 0.3.5_0-1 | Scanner S-KEY tool |
 | `electron45-bin` | 45.3.4-1 | Electron 45 runtime for Mattermost; provides `electron45` |
 | `mattermost-desktop` | 6.4.0-2 | Mattermost Desktop client |
+| `viber` | 29.4.0.7-1 | Proprietary Viber desktop client |
 
 The repository is x86_64 only.
 
@@ -158,8 +169,9 @@ or use **Actions → build-pacman-repo → Run workflow** on GitHub. Pushing to
     exports the public key, and generates the index page.
   - `deploy`: publishes `repo/` through GitHub Pages.
 - Build order is `libwebsockets` → `libsearpc` → `seafile` →
-  `seafile-client` → Brother packages → `mattermost-desktop`, installing local
-  packages before their dependents.
+  `seafile-client` → Brother packages → `electron45-bin` →
+  `mattermost-desktop` → `viber`, installing local packages before their
+  dependents.
 - Debug packages are excluded from the published repository.
 
 Package sources:
@@ -170,8 +182,12 @@ Package sources:
 - <https://github.com/ArchPackages/brother>
 - <https://github.com/ArchPackages/libsearpc>
   (forked from <https://aur.archlinux.org/packages/libsearpc>)
+- <https://github.com/ArchPackages/electron45-bin>
+  (forked from <https://aur.archlinux.org/packages/electron45-bin>)
 - <https://github.com/ArchPackages/mattermost-desktop>
   (forked from <https://archlinux.org/packages/extra/x86_64/mattermost-desktop/>)
+- <https://github.com/ArchPackages/viber>
+  (forked from <https://aur.archlinux.org/packages/viber>)
 
 ## Troubleshooting
 
