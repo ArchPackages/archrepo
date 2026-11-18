@@ -58,6 +58,13 @@ jobs:
           ref: master
           path: src/libsearpc
 
+      - name: Checkout electron45-bin
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/electron45-bin
+          ref: main
+          path: src/electron45-bin
+
       - name: Checkout mattermost-desktop
         uses: actions/checkout@v4
         with:

@@ -50,8 +50,8 @@ install_built() {
 }
 
 # Dependency order matters: libsearpc and libwebsockets must be installed
-# before seafile, seafile-client needs local seafile, and brscan-skey needs
-# local brscan5.
+# before seafile, seafile-client needs local seafile, brscan-skey needs local
+# brscan5, and mattermost-desktop needs the local electron45-bin provider.
 build_pkg src/libwebsockets
 install_built 'libwebsockets-*.pkg.tar.zst'
 
@@ -66,6 +66,9 @@ build_pkg src/brother/printer
 build_pkg src/brother/scanner
 install_built 'brscan5-*.pkg.tar.zst'
 build_pkg src/brother/scanner/brscan-skey
+
+build_pkg src/electron45-bin
+install_built 'electron45-bin-*.pkg.tar.zst'
 
 build_pkg src/mattermost-desktop
 

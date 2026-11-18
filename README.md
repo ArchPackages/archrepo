@@ -1,8 +1,8 @@
 # ArchPackages pacman repository
 
 A small, signed pacman repository for Arch Linux (x86_64), built from the
-ArchPackages package forks (Seafile, Brother and Mattermost Desktop) by GitHub
-Actions and published on GitHub Pages.
+ArchPackages package forks (Seafile, Brother, Mattermost Desktop and the
+Electron 45 runtime) by GitHub Actions and published on GitHub Pages.
 
 - **Repository URL:** `https://archpackages.github.io/archrepo/$arch`
 - **Source:** <https://github.com/ArchPackages/archrepo>
@@ -75,6 +75,10 @@ For Mattermost Desktop:
 sudo pacman -S mattermost-desktop
 ```
 
+Mattermost Desktop 6.4.0 uses Electron 45. Arch does not package `electron45`
+yet, so this repository provides the prebuilt `electron45-bin` runtime, which
+is installed automatically as `mattermost-desktop`'s dependency.
+
 If pacman cannot find the `archpackages` database, refresh the sync databases
 once:
 
@@ -86,7 +90,7 @@ sudo pacman -Syy
 
 ```bash
 pacman -Q seafile seafile-client libwebsockets libsearpc
-pacman -Q mattermost-desktop
+pacman -Q mattermost-desktop electron45-bin
 ```
 
 Expected versions:
@@ -96,7 +100,8 @@ libwebsockets 5.0.0-1
 libsearpc 2:3.3.0-5
 seafile 9.0.22-2
 seafile-client 9.0.22-1
-mattermost-desktop 6.3.2-1
+mattermost-desktop 6.4.0-2
+electron45-bin 45.3.4-1
 ```
 
 Restart the Seafile applet after installing or upgrading it.
@@ -112,7 +117,8 @@ Restart the Seafile applet after installing or upgrading it.
 | `brother-mfc-l3760cdw` | 3.5.1-4 | LPR/CUPS printer drivers |
 | `brscan5` | 1.7.0_0-1 | SANE scanner driver |
 | `brscan-skey` | 0.3.5_0-1 | Scanner S-KEY tool |
-| `mattermost-desktop` | 6.3.2-1 | Mattermost Desktop client |
+| `electron45-bin` | 45.3.4-1 | Electron 45 runtime for Mattermost; provides `electron45` |
+| `mattermost-desktop` | 6.4.0-2 | Mattermost Desktop client |
 
 The repository is x86_64 only.
 
