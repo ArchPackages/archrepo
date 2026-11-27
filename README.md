@@ -22,14 +22,17 @@ Server = https://archpackages.github.io/archrepo/$arch
 SigLevel = Required DatabaseOptional
 ```
 
-Then add this line to `/etc/pacman.conf`, **above `[extra]`**:
+Then add this line to `/etc/pacman.conf`, **above `[omarchy]` and `[extra]`**:
 
 ```ini
 Include = /etc/pacman.d/archpackages.conf
 ```
 
-The order matters: this repository provides `libwebsockets` 5.0.0, which must
-take precedence over the 4.5.8 package in Arch's `[extra]`.
+The order matters: pacman uses the first repository that contains a package,
+not the one with the highest version. This repository provides
+`libwebsockets` 5.0.0, which must take precedence over the 4.5.8 package in
+Arch's `[extra]`, and `signed` 0.4.0, which must take precedence over the
+0.3.2 package in Omarchy's `[omarchy]`. Put the `Include` line above both.
 
 `/etc/pacman.conf` is owned by the `pacman` package and may be replaced or
 produce a `.pacnew` on updates. Keeping the repository in
@@ -96,6 +99,11 @@ sudo pacman -S signed
 
 Signed's recipe comes from Omarchy's package repository but builds the
 <https://github.com/MPavleski/signed> fork rather than `omacom/signed`.
+
+If Omarchy's `[omarchy]` repository is also enabled, `[archpackages]` must be
+listed first in `/etc/pacman.conf`. Pacman uses the first repository that
+contains a package, so with `[omarchy]` first it keeps `signed 0.3.2-4` and
+never offers `0.4.0-1` from this repository.
 
 If pacman cannot find the `archpackages` database, refresh the sync databases
 once:
