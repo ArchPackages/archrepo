@@ -123,7 +123,7 @@ sudo pacman-key --lsign-key $FPR</pre>
 <p>Then run <code>sudo pacman -Syu</code>.</p>
 <p>Packages: libwebsockets 5.0.0, libsearpc, seafile, seafile-client,
 brother-mfc-l3760cdw, brscan5, brscan-skey, electron45-bin,
-mattermost-desktop, viber.</p>
+mattermost-desktop, viber, signed.</p>
 <p>Built or repackaged by GitHub Actions from the
 <a href="https://github.com/ArchPackages">ArchPackages</a> repos.</p>
 </body>
