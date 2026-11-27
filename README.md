@@ -2,7 +2,7 @@
 
 A small, signed pacman repository for Arch Linux (x86_64), built from the
 ArchPackages package forks (Seafile, Brother, Mattermost Desktop, the Electron
-45 runtime and Viber) by GitHub Actions and published on GitHub Pages.
+45 runtime, Viber and Signed) by GitHub Actions and published on GitHub Pages.
 
 - **Repository URL:** `https://archpackages.github.io/archrepo/$arch`
 - **Source:** <https://github.com/ArchPackages/archrepo>
@@ -88,6 +88,15 @@ sudo pacman -S viber
 Viber is repackaged from the vendor's official Debian build. It is proprietary
 software; review Viber's terms before redistributing it.
 
+For Signed:
+
+```bash
+sudo pacman -S signed
+```
+
+Signed's recipe comes from Omarchy's package repository but builds the
+<https://github.com/MPavleski/signed> fork rather than `omacom/signed`.
+
 If pacman cannot find the `archpackages` database, refresh the sync databases
 once:
 
@@ -99,7 +108,7 @@ sudo pacman -Syy
 
 ```bash
 pacman -Q seafile seafile-client libwebsockets libsearpc
-pacman -Q mattermost-desktop electron45-bin viber
+pacman -Q mattermost-desktop electron45-bin viber signed
 ```
 
 Expected versions:
@@ -112,6 +121,7 @@ seafile-client 9.0.22-1
 mattermost-desktop 6.4.0-2
 electron45-bin 45.3.4-1
 viber 29.4.0.7-1
+signed 0.3.2-5
 ```
 
 Restart the Seafile applet after installing or upgrading it.
@@ -130,6 +140,7 @@ Restart the Seafile applet after installing or upgrading it.
 | `electron45-bin` | 45.3.4-1 | Electron 45 runtime for Mattermost; provides `electron45` |
 | `mattermost-desktop` | 6.4.0-2 | Mattermost Desktop client |
 | `viber` | 29.4.0.7-1 | Proprietary Viber desktop client |
+| `signed` | 0.3.2-5 | PDF signing app; built from the `MPavleski/signed` fork |
 
 The repository is x86_64 only.
 
@@ -170,8 +181,8 @@ or use **Actions → build-pacman-repo → Run workflow** on GitHub. Pushing to
   - `deploy`: publishes `repo/` through GitHub Pages.
 - Build order is `libwebsockets` → `libsearpc` → `seafile` →
   `seafile-client` → Brother packages → `electron45-bin` →
-  `mattermost-desktop` → `viber`, installing local packages before their
-  dependents.
+  `mattermost-desktop` → `viber` → `signed`, installing local packages before
+  their dependents.
 - Debug packages are excluded from the published repository.
 
 Package sources:
@@ -188,6 +199,10 @@ Package sources:
   (forked from <https://archlinux.org/packages/extra/x86_64/mattermost-desktop/>)
 - <https://github.com/ArchPackages/viber>
   (forked from <https://aur.archlinux.org/packages/viber>)
+- <https://github.com/ArchPackages/signed>
+  (recipe forked from
+  <https://github.com/omacom/omarchy-pkgs/tree/master/pkgbuilds/signed>;
+  source is <https://github.com/MPavleski/signed>)
 
 ## Troubleshooting
 

@@ -79,6 +79,13 @@ jobs:
           ref: master
           path: src/viber
 
+      - name: Checkout signed
+        uses: actions/checkout@v4
+        with:
+          repository: ArchPackages/signed
+          ref: main
+          path: src/signed
+
       - name: Build in Arch Linux container
         run: |
           docker run --rm \

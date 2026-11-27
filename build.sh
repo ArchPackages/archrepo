@@ -72,8 +72,9 @@ install_built 'electron45-bin-*.pkg.tar.zst'
 
 build_pkg src/mattermost-desktop
 
-# viber is independent of the local packages above.
+# viber and signed are independent of the local packages above.
 build_pkg src/viber
+build_pkg src/signed
 
 echo '==> Collecting packages'
 find "$OUT" -maxdepth 1 -type f -name '*.pkg.tar.zst' \
