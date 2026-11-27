@@ -121,7 +121,7 @@ seafile-client 9.0.22-1
 mattermost-desktop 6.4.0-2
 electron45-bin 45.3.4-1
 viber 29.4.0.7-1
-signed 0.3.2-5
+signed 0.4.0-1
 ```
 
 Restart the Seafile applet after installing or upgrading it.
@@ -140,7 +140,7 @@ Restart the Seafile applet after installing or upgrading it.
 | `electron45-bin` | 45.3.4-1 | Electron 45 runtime for Mattermost; provides `electron45` |
 | `mattermost-desktop` | 6.4.0-2 | Mattermost Desktop client |
 | `viber` | 29.4.0.7-1 | Proprietary Viber desktop client |
-| `signed` | 0.3.2-5 | PDF signing app; built from the `MPavleski/signed` fork |
+| `signed` | 0.4.0-1 | PDF signing app; built from the `MPavleski/signed` fork |
 
 The repository is x86_64 only.
 
